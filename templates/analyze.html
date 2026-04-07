@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Analyze URL — Quantum WebGuard{% endblock %}
+{% block meta_description %}Submit a URL for real-time malicious link analysis using hybrid ML and rule-based threat
+detection.{% endblock %}
+
+{% block content %}
+<section class="page-header reveal">
+    <h1 class="page-title">Analyze <span class="text-gradient">URL</span></h1>
+    <p class="page-subtitle">Submit any URL for real-time threat analysis powered by our hybrid detection engine</p>
+</section>
+
+<section class="analyze-section reveal">
+    <div class="analyze-card glass">
+        <div class="analyze-card-header">
+            <div class="status-indicator" id="systemStatus">
+                <span class="status-dot online"></span>
+                <span>System Online</span>
+            </div>
+        </div>
+
+        <form id="scan-form" class="analyze-form" novalidate>
+            <div class="input-group">
+                <div class="input-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M8 4H6C4.895 4 4 4.895 4 6V14C4 15.105 4.895 16 6 16H14C15.105 16 16 15.105 16 14V12"
+                            stroke="#64748b" stroke-width="1.5" stroke-linecap="round" />
+                        <path d="M10 10L16 4M16 4H12M16 4V8" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <input id="url-input" name="url" type="url" placeholder="Enter URL (e.g. https://example.com)"
+                    autocomplete="off" spellcheck="false" required />
+                <button type="submit" class="btn btn-primary btn-scan" id="scanBtn">
+                    <span class="btn-text">Analyze</span>
+                    <span class="btn-loading">
+                        <span class="spinner"></span>
+                    </span>
+                </button>
+            </div>
+        </form>
+
+        <p class="error-text" id="analysisError" hidden></p>
+
+        <div class="result-panel glass-inner" id="analysisResult" hidden>
+            <div class="result-header">
+                <div class="result-badge-wrap">
+                    <span class="prediction-badge" id="predictionBadge">Pending</span>
+                </div>
+                <span class="result-timestamp" id="resultTimestamp">-</span>
+            </div>
+
+            <div class="result-body">
+                <div class="confidence-ring-wrap">
+                    <div class="chart-container">
+                        <canvas id="confidenceChart" width="180" height="180"></canvas>
+                        <div class="chart-center-text" id="confidenceCenterText">0%</div>
+                    </div>
+                    <span class="confidence-label">Confidence</span>
+                </div>
+
+                <div class="result-metrics">
+                    <div class="metric-card">
+                        <span class="metric-label">Source</span>
+                        <span class="metric-value source-badge" id="analysisSource">SVC</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Attack Type</span>
+                        <span class="metric-value attack-badge" id="attackType">None</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Risk Score</span>
+                        <span class="metric-value" id="riskScore">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-description-wrap">
+                <p class="result-description" id="resultDescription">Awaiting metadata...</p>
+                <div class="reasoning-box glass-inner" id="reasoningBox">
+                    <span class="reasoning-label">Technical Reasoning</span>
+                    <p class="reasoning-text" id="analysisReasoning">Analyzing structural patterns and model
+                        confidence...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="how-it-works-section reveal">
+    <h2 class="section-heading">How It Works</h2>
+    <div class="pipeline-steps">
+        <div class="pipeline-step glass">
+            <div class="step-number">1</div>
+            <h3>URL Input</h3>
+            <p>The URL is normalized, validated, and prepared for dual-layer analysis.</p>
+        </div>
+        <div class="pipeline-connector">
+            <svg width="40" height="20" viewBox="0 0 40 20">
+                <path d="M0 10 L32 10 M28 5 L35 10 L28 15" stroke="#38bdf8" stroke-width="1.5" fill="none"
+                    opacity="0.6" />
+            </svg>
+        </div>
+        <div class="pipeline-step glass">
+            <div class="step-number">2</div>
+            <h3>Dual Analysis</h3>
+            <p>TF-IDF + SVM classification runs in parallel with rule-based pattern detection.</p>
+        </div>
+        <div class="pipeline-connector">
+            <svg width="40" height="20" viewBox="0 0 40 20">
+                <path d="M0 10 L32 10 M28 5 L35 10 L28 15" stroke="#38bdf8" stroke-width="1.5" fill="none"
+                    opacity="0.6" />
+            </svg>
+        </div>
+        <div class="pipeline-step glass">
+            <div class="step-number">3</div>
+            <h3>Fusion & Verdict</h3>
+            <p>Signals are correlated to produce a final prediction, confidence, and risk score.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

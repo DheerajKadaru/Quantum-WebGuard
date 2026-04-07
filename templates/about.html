@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}About — Quantum WebGuard{% endblock %}
+{% block meta_description %}Learn about Quantum WebGuard's hybrid URL detection architecture, ML pipeline, and
+rule-based threat analysis engine.{% endblock %}
+
+{% block content %}
+<section class="page-header reveal">
+    <h1 class="page-title">About <span class="text-gradient">WebGuard</span></h1>
+    <p class="page-subtitle">Understanding the hybrid detection architecture behind Quantum WebGuard</p>
+</section>
+
+<section class="about-intro-section reveal">
+    <div class="about-intro-card glass">
+        <div class="about-intro-content">
+            <h2>What is Quantum WebGuard?</h2>
+            <p>
+                Quantum WebGuard is a cybersecurity-focused URL analysis platform that detects malicious links
+                using <strong>hybrid intelligence</strong>. It combines statistical machine learning with
+                hand-crafted threat detection rules to provide robust, explainable verdicts on URL safety.
+            </p>
+            <p>
+                The system is designed as a <strong>mini-project demonstration</strong> of how associative
+                detection — correlating signals from multiple independent classifiers — can outperform
+                either approach alone.
+            </p>
+        </div>
+        <div class="about-intro-visual">
+            <div class="orbit-ring">
+                <div class="orbit-node n1"><span>ML</span></div>
+                <div class="orbit-node n2"><span>Rules</span></div>
+                <div class="orbit-node n3"><span>Fusion</span></div>
+                <div class="orbit-center">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                        <circle cx="18" cy="18" r="14" stroke="#38bdf8" stroke-width="1.5"
+                            fill="rgba(56,189,248,0.08)" />
+                        <path d="M18 8 L24 12 L24 20 C24 25 18 28 18 28 C18 28 12 25 12 20 L12 12 Z" stroke="#38bdf8"
+                            stroke-width="1.5" fill="rgba(56,189,248,0.15)" />
+                        <circle cx="18" cy="16" r="2" fill="#44f0a1" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="about-tech-section reveal">
+    <h2 class="section-heading">Technology Stack</h2>
+
+    <div class="tech-grid">
+        <article class="tech-card glass">
+            <div class="tech-card-header blue">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <circle cx="14" cy="14" r="10" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M10 14l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                <h3>Machine Learning Layer</h3>
+            </div>
+            <ul class="tech-list">
+                <li>
+                    <strong>TF-IDF Vectorization</strong>
+                    <span>Character-level n-grams (3–6) extract lexical URL features without domain knowledge</span>
+                </li>
+                <li>
+                    <strong>Linear SVM Classifier</strong>
+                    <span>High-speed decision boundary for binary classification with probability calibration</span>
+                </li>
+                <li>
+                    <strong>Training Data</strong>
+                    <span>Trained on a curated dataset of safe and malicious URLs with stratified splitting</span>
+                </li>
+            </ul>
+        </article>
+
+        <article class="tech-card glass">
+            <div class="tech-card-header purple">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <path d="M14 4 L20 8 L20 16 C20 21 14 24 14 24 C14 24 8 21 8 16 L8 8 Z" stroke="currentColor"
+                        stroke-width="1.5" />
+                    <circle cx="14" cy="13" r="2" fill="currentColor" />
+                </svg>
+                <h3>Rule-Based Detection</h3>
+            </div>
+            <ul class="tech-list">
+                <li>
+                    <strong>Phishing Detection</strong>
+                    <span>Keywords like "login", "verify", "account" in suspicious contexts</span>
+                </li>
+                <li>
+                    <strong>Typosquatting & Spoofing</strong>
+                    <span>Detects visual look-alike domains (e.g., paypa1, g00gle, micr0soft)</span>
+                </li>
+                <li>
+                    <strong>DGA-Style Domains</strong>
+                    <span>Entropy and consonant-clustering analysis for algorithmically generated hostnames</span>
+                </li>
+                <li>
+                    <strong>Obfuscation Patterns</strong>
+                    <span>Hex encoding, @ symbols, excessive slashes, and IP-based hosting</span>
+                </li>
+            </ul>
+        </article>
+
+        <article class="tech-card glass">
+            <div class="tech-card-header green">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <rect x="4" y="4" width="20" height="20" rx="4" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M10 14h8M14 10v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                <h3>Hybrid Fusion Logic</h3>
+            </div>
+            <ul class="tech-list">
+                <li>
+                    <strong>Associative Correlation</strong>
+                    <span>Both ML and rule outputs are combined — a malicious flag from either triggers the final
+                        verdict</span>
+                </li>
+                <li>
+                    <strong>Risk Score Computation</strong>
+                    <span>Maximum of rule-based risk and ML confidence, capped at 100</span>
+                </li>
+                <li>
+                    <strong>Attack Classification</strong>
+                    <span>Labels threats as Phishing, Malware, Spoofing, DGA, Obfuscation, or Suspicious Pattern</span>
+                </li>
+            </ul>
+        </article>
+    </div>
+</section>
+
+{% if metrics %}
+<section class="about-metrics-section reveal">
+    <h2 class="section-heading">Model Performance</h2>
+    <p class="section-subheading">Evaluation metrics from the trained {{ metrics.model }} classifier</p>
+
+    <div class="metrics-grid">
+        <div class="metric-ring-card glass">
+            <canvas id="accuracyRing" width="120" height="120"></canvas>
+            <div class="metric-ring-label">
+                <span class="metric-ring-value">{{ "%.1f" | format(metrics.accuracy * 100) }}%</span>
+                <span class="metric-ring-name">Accuracy</span>
+            </div>
+        </div>
+        <div class="metric-ring-card glass">
+            <canvas id="precisionRing" width="120" height="120"></canvas>
+            <div class="metric-ring-label">
+                <span class="metric-ring-value">{{ "%.1f" | format(metrics.precision * 100) }}%</span>
+                <span class="metric-ring-name">Precision</span>
+            </div>
+        </div>
+        <div class="metric-ring-card glass">
+            <canvas id="recallRing" width="120" height="120"></canvas>
+            <div class="metric-ring-label">
+                <span class="metric-ring-value">{{ "%.1f" | format(metrics.recall * 100) }}%</span>
+                <span class="metric-ring-name">Recall</span>
+            </div>
+        </div>
+        <div class="metric-ring-card glass">
+            <canvas id="f1Ring" width="120" height="120"></canvas>
+            <div class="metric-ring-label">
+                <span class="metric-ring-value">{{ "%.1f" | format(metrics.f1 * 100) }}%</span>
+                <span class="metric-ring-name">F1 Score</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="about-architecture-section reveal">
+    <h2 class="section-heading">Architecture Overview</h2>
+    <div class="architecture-flow glass">
+        <div class="arch-node input">Input URL</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node process">Validator</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-split">
+            <div class="arch-node ml">TF-IDF + SVM</div>
+            <div class="arch-node rules">Rule Engine</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node fusion">Associative Fusion</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node output">Verdict + Risk Score</div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{% if metrics %}
+<div id="metricsData" hidden
+    data-accuracy="{{ metrics.accuracy }}"
+    data-precision="{{ metrics.precision }}"
+    data-recall="{{ metrics.recall }}"
+    data-f1="{{ metrics.f1 }}"></div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof Chart === 'undefined') return;
+        var src = document.getElementById('metricsData');
+        if (!src) return;
+
+        var metricsData = {
+            accuracy: parseFloat(src.getAttribute('data-accuracy')) || 0,
+            precision: parseFloat(src.getAttribute('data-precision')) || 0,
+            recall: parseFloat(src.getAttribute('data-recall')) || 0,
+            f1: parseFloat(src.getAttribute('data-f1')) || 0
+        };
+
+        var colors = {
+            accuracy: '#38bdf8',
+            precision: '#a78bfa',
+            recall: '#22c55e',
+            f1: '#f59e0b',
+            rocauc: '#ec4899'
+        };
+
+        var canvasIds = {
+            accuracy: 'accuracyRing',
+            precision: 'precisionRing',
+            recall: 'recallRing',
+            f1: 'f1Ring'
+        };
+
+        Object.keys(metricsData).forEach(function (key) {
+            var el = document.getElementById(canvasIds[key]);
+            if (!el) return;
+            var pct = metricsData[key] * 100;
+            new Chart(el, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [pct, 100 - pct],
+                        backgroundColor: [colors[key], 'rgba(15,23,42,0.4)'],
+                        borderWidth: 0,
+                        cutout: '78%'
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    animation: { animateScale: true }
+                }
+            });
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}

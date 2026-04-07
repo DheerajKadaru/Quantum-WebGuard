@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Scan Results — Quantum WebGuard{% endblock %}
+{% block meta_description %}View all URL scan results, statistics, and threat detection history.{% endblock %}
+
+{% block content %}
+<section class="page-header reveal">
+    <h1 class="page-title">Scan <span class="text-gradient">Results</span></h1>
+    <p class="page-subtitle">Monitor detected threats, review scan history, and download reports</p>
+</section>
+
+<section class="results-stats-section reveal">
+    <div class="stats-grid">
+        <article class="stat-card glass" id="cardTotalScans">
+            <div class="stat-card-icon blue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+            </div>
+            <div class="stat-card-body">
+                <h3 id="totalScansValue">{{ stats.total_scans }}</h3>
+                <p>Total Scans</p>
+            </div>
+        </article>
+
+        <article class="stat-card glass" id="cardMalicious">
+            <div class="stat-card-icon red">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M5.07 19h13.86c1.5 0 2.47-1.6 1.73-2.88L13.73 4.24c-.74-1.28-2.72-1.28-3.46 0L3.34 16.12C2.6 17.4 3.57 19 5.07 19Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="stat-card-body">
+                <h3 id="maliciousCountValue">{{ stats.malicious_scans }}</h3>
+                <p>Malicious Detected</p>
+            </div>
+        </article>
+
+        <article class="stat-card glass" id="cardSafe">
+            <div class="stat-card-icon green">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="stat-card-body">
+                <h3 id="safeCountValue">{{ stats.safe_scans }}</h3>
+                <p>Safe URLs</p>
+            </div>
+        </article>
+
+        <article class="stat-card glass" id="cardRate">
+            <div class="stat-card-icon amber">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M16 8v8m-4-6v6m-4-4v4m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="stat-card-body">
+                {% set total = stats.total_scans %}
+                {% set malicious = stats.malicious_scans %}
+                <h3 id="detectionRateValue">{{ '%.1f' | format((malicious / total * 100) if total else 0) }}%</h3>
+                <p>Detection Rate</p>
+            </div>
+        </article>
+    </div>
+</section>
+
+<section class="results-chart-section reveal">
+    <div class="chart-card glass">
+        <h2>Threat Distribution</h2>
+        <div class="history-chart-wrap">
+            <canvas id="historyChart"></canvas>
+        </div>
+    </div>
+</section>
+
+<section class="results-table-section reveal">
+    <div class="table-card glass">
+        <div class="table-header">
+            <h2>Scan History</h2>
+            <span class="table-count">{{ stats.total_scans }} total records</span>
+        </div>
+
+        <div class="table-wrap">
+            <table id="scanTable">
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Prediction</th>
+                        <th>Confidence</th>
+                        <th>Attack Type</th>
+                        <th>Risk Score</th>
+                        <th>Timestamp</th>
+                        <th>Report</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for scan in scans %}
+                    <tr class="scan-row">
+                        <td class="url-cell" title="{{ scan.url }}">{{ scan.url }}</td>
+                        <td>
+                            <span
+                                class="table-badge {{ 'safe' if scan.final_prediction == 'Safe' else 'malicious' }}">
+                                {{ scan.final_prediction }}
+                            </span>
+                        </td>
+                        <td>{{ '%.2f' | format(scan.confidence) }}%</td>
+                        <td>
+                            <span class="attack-type-cell">{{ scan.attack_type }}</span>
+                        </td>
+                        <td>
+                            <span class="risk-cell {{ 'high' if scan.risk_score >= 70 else ('medium' if scan.risk_score >= 40 else 'low') }}">
+                                {{ '%.1f' | format(scan.risk_score) }}
+                            </span>
+                        </td>
+                        <td class="timestamp-cell">{{ scan.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            {% if download_endpoint %}
+                            <a class="pdf-btn" href="{{ url_for(download_endpoint, scan_id=scan.id) }}"
+                                title="Download PDF Report">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12h8M8 2v8m0 0l3-3m-3 3L5 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                PDF
+                            </a>
+                            {% else %}
+                            <span class="disabled-pdf">N/A</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <div class="empty-content">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="#334155" stroke-width="1.5"/><path d="M17 24h14M24 17v14" stroke="#475569" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                <p>No scan data available yet</p>
+                                <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-sm">Scan your first URL</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if pagination and pagination.pages > 1 %}
+        <div class="pagination">
+            {% if pagination.has_prev %}
+            <a href="{{ url_for('results', page=pagination.prev_num) }}" class="page-btn">← Previous</a>
+            {% else %}
+            <span class="page-btn disabled">← Previous</span>
+            {% endif %}
+
+            <div class="page-numbers">
+                {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                    {% if p %}
+                        <a href="{{ url_for('results', page=p) }}"
+                           class="page-num {{ 'active' if p == pagination.page }}">{{ p }}</a>
+                    {% else %}
+                        <span class="page-ellipsis">…</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if pagination.has_next %}
+            <a href="{{ url_for('results', page=pagination.next_num) }}" class="page-btn">Next →</a>
+            {% else %}
+            <span class="page-btn disabled">Next →</span>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
