@@ -1,5 +1,6 @@
 Flask
 Flask-SQLAlchemy
+Flask-Limiter
 joblib
 numpy
 pandas
