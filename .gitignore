@@ -7,13 +7,27 @@ env/
 venv/
 ENV/
 
-# Databases
+# Databases (local only)
 *.db
 *.sqlite3
 
-# Environments
+# Environment secrets
 .env
 .flaskenv
+
+# Old app package (conflicts with app.py)
+app/
+
+# Training-only files (not needed at runtime)
+qlstm.py
+pipeline.py
+dataset.xlsx
+test_detector.py
+database.py
+
+# Duplicate model files in root (originals are in artifacts/)
+/best_model.joblib
+/tfidf_vectorizer.joblib
 
 # IDEs
 .vscode/
